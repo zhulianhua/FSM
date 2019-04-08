@@ -9,11 +9,11 @@
 % Author: Lianhua Zhu
 % Depends on lgwt.m and getLebedevSphere.m
 
-clc;clearvars;clf;
+clc;clf;
 tic
 %% Computational paramters
 % Velocity grid size and number of node for the Guass-Lebelev quadrature
-N = 32; M = 14;
+N =32; M = 6;
 % Radial extend for radial integration and velocity domain
 R = 6.0; L = (3+sqrt(2.0))*R/4; dv = 2*L/N;
 % VHS constant in eq. 1.5, and Page 667
@@ -24,6 +24,7 @@ li = -N/2:N/2-1;
 ll = zeros(3,N,N,N);
 vSqr = zeros(N,N,N);
 lNorm = zeros(N,N,N);
+% how to choose the discrete velocity?
 vi = linspace(-L,L-dv,N);
 for l1=1:N
     for l2=1:N
@@ -77,7 +78,7 @@ Gmm(:) = 16*pi*pi*bgamma*0.5*R*(GLw'*(r.^(gamma+2).*(sinc(1.0/L*r.*lNorm(:)'))))
 % end
 
 %% Storage for F(r,k)
-Fkr = zeros(N,N,N,N);
+% Fkr = zeros(N,N,N,N);
 % Pre compute F(k,r), eq. 3.8 for VHS model, vectorized
 % , actually no need for precomputation when using VHS model
 % Frk(:,:) =  4*pi*bgamma*r.^(gamma+2).*sinc(pi/L*r.*lNorm(:)'/2.0);
@@ -97,8 +98,8 @@ Fkr = zeros(N,N,N,N);
 
 %% constant aux arrays and temperory space for gain term FFT etc.
 lw = zeros(N,N,N);
-A = zeros(N,N,N);
-B = zeros(N,N,N);
+% A = zeros(N,N,N);
+% B = zeros(N,N,N);
 
 %% a single time calculation evolution
 toc % begin computation
@@ -134,9 +135,9 @@ Q = real(Q);
 toc % end of computation 
 
 % check if correct
-plot(vi, Q(:,16,16),'o','linewidth', 1); % analytical solution of Q, i.e., \partial_t f
+plot(vi, Q(:,N/2,N/2),'o','linewidth', 1); % analytical solution of Q, i.e., \partial_t f
 hold on;
-plot(vi, Qana(:,16,16),'-x', 'linewidth', 1); % numerical solution 
+plot(vi, Qana(:,N/2,N/2),'-x', 'linewidth', 1); % numerical solution 
 % plot(vi, f(:,16,16),'-','linewidth', 1); % 
 xlabel('v')
 legend('Q_{num}(:,N/2,N/2)', 'Q_{ana}(:,N/2,N/2)')

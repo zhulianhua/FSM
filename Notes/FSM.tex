@@ -8,6 +8,10 @@
 \usepackage{listings}
 \usepackage{amssymb}
 \usepackage{epstopdf}
+\usepackage{tikz}
+\usepackage{bm}
+\usepackage{tkz-euclide}
+
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
 \lstset{language=Matlab, 
@@ -16,7 +20,7 @@
 } 
 
 
-\title{Notes for the Boltzmann equation and its fast spectral methods}
+\title{Notes for the Boltzmann equation and its Fast Spectral Methods}
 \author{Lianhua Zhu}
 %\date{}                                           % Activate to display a given date or no date
 
@@ -514,8 +518,8 @@ B = b_\gamma r^{\gamma}
 
 \begin{align*}
 \begin{split}
-G(l,m)  &= b_\gamma  \int_{\mathbb{R}^3} \int_{\mathcal{S}^2}  r^{\gamma}e^{-i{\pi \over L}r\frac{l+m}{2} \cdot g -i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
-&= b_\gamma  \int_{\mathbb{R}^3}  r^{\gamma} e^{-i{\pi \over L}r\frac{l+m}{2} \cdot g } \int_{\mathcal{S}^2} e^{-i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
+G(l,m)  &= b_\gamma  \int_{\mathbb{R}^3} \int_{\mathcal{S}^2}  r^{\gamma}e^{-i{\pi \over L}\frac{l+m}{2} \cdot g -i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
+&= b_\gamma  \int_{\mathbb{R}^3}  r^{\gamma} e^{-i{\pi \over L}\frac{l+m}{2} \cdot g } \int_{\mathcal{S}^2} e^{-i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
 &= b_\gamma  \int_{0}^R\int_{\mathcal{S}^2}  r^{\gamma} e^{-i{\pi \over L}r\frac{l+m}{2} \cdot \hat g }\int_{\mathcal{S}^2}    e^{-i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega d\hat g dr \\
 & = 16 \pi^{2} b_{\gamma} \int_{0}^{R} r^{\gamma+2} \operatorname{Sinc}\left(\frac{\pi}{L} r \frac{|l+m|}{2}\right) \operatorname{Sinc}\left(\frac{\pi}{L} r \frac{|l-m|}{2}\right) d r
 \end{split}
@@ -655,10 +659,167 @@ We need to get the following values for $k = -N/2, N/2-1$ for every $r_i$ and $w
 \end{align}
  
 
-\begin{equation}
-\hat f_k = 
-\end{equation}
 
+\section{Carleman representation}
+
+The basic identity we will use is 
+\begin{equation}
+\frac{1}{2} \int_{\mathbb{S}^{d-1}} F(|u| \sigma-u) d \sigma=\frac{1}{|u|^{d-2}} \int_{\mathbb{R}^{d}} \delta\left(2 x \cdot u+|x|^{2}\right) F(x) d x
+\end{equation}
+For $d=2$, the \emph{graphical proof} of the identity is give in Fig.~\ref{fig:identity}. The coordinate of a point on the black circle's equation with parameter $u$ is $|u| \sigma-u$.  For a given $u$, the equation of the point on the blue circle is $ u\cdot x/|x| = |x|/2$, i.e., $2 x \cdot u+|x|^{2}= 0$. 
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}
+  \tkzInit[xmax=4,ymax=4,xmin=-4,ymin=-4]
+  \tkzGrid
+  \tkzAxeXY
+  % \draw[ thick,-latex] (-6,0) -- (6,0) node [anchor= west]{$x$};
+   %\draw[ thick,-latex] (0,-6) -- (0,6) node [anchor= west]{$x$};
+   \draw[] (0,0) circle (2);
+   \draw[ thick,-latex] (0,0) -- (1,1.732) node [anchor=south west]{$\bm u$};
+   \draw[ thick,dashed,-latex] (0,0) -- (-1,-1.732) node [anchor=north east]{$-\bm u$};
+   \draw[blue] (-1,-1.732) circle (2);
+   \draw[ thick,-latex,red] (0,0) -- (-3,-1.8) node [anchor=north east]{$\bm x$};
+   \draw[ thick,dashed,-latex,red] (0,0) -- (3,1.8) node [anchor=south west]{$-\bm x$};
+% projection
+   \draw[ thick,dashed,-latex] (1,1.732) -- (1.54, 0.91); % the opposite projection
+    \draw[ thick,dashed,-latex] (-1,-1.732) -- (-1.54, -0.91) node [anchor=south]{$\perp$};
+    \draw[ thick, blue,-latex] (0,0) -- (1.54, 0.92) node [anchor=north]{$-\bm x/2$};    
+ % \tkzText[above](0,6.75){2D demo of the basic identity}
+  \end{tikzpicture}
+\caption{For any point $x$ on the blue circle, the projection point of $u$ on $-x$ should be $-x/2$.}
+\label{fig:identity}
+\end{center}
+\end{figure}
+
+
+%v' = v - {g\over2} + {r\over2} \omega,\quad v'_* = v - {g\over2} - {r\over2} 
+
+\begin{align}
+\begin{split}
+Q(f,f)(v) &=  \int_{\mathbb{R}^3} \int_{\mathcal{S}^2} {B}(r,\cos\chi)[f(v_*')f(v')-f(v_*)f(v)] d\omega dv_* \\
+& =  \int_{\mathbb{R}^3} \int_{\mathcal{S}^2} {B}(r,\cos\chi) \left[ 
+f \left(v_* + {g\over2} - {r\over2} \omega  \right)f \left(v - {g\over2} + {r\over2} \omega \right)  - f(v_*)f(v) \right]  d\omega dv_* \\
+& =  \int_{\mathbb{R}^3} \int_{\mathcal{S}^2} {B}(r,\cos\chi) \left[ 
+f \left(v_* - {|g|\omega - g\over 2}\right)f \left(v +  {|g|\omega - g\over 2}\right) -f(v_*)f(v)\right]  d\omega dv_* \\
+& =  2\int_{\mathbb{R}^3} \int_{\mathbb{R}^3} {1\over r}{B}(r,\cos\chi) \delta\left( 2x\cdot g + |x|^2 \right) \left[ 
+f \left(v_* - x/2\right)f \left(v + x/2\right) -f(v_*)f(v)\right]  dx dv_* \\
+\end{split}
+\end{align}
+
+Change of variable $x \to x/2$ in $x$,
+\begin{multline}
+Q(f, f)(v) =4 \int_{v_{*} \in \mathbb{R}^{d}} \int_{x \in \mathbb{R}^{d}} B\left(r,\cos\chi\right) \frac{1}{r} \delta\left(4 x \cdot g+4|x|^{2}\right) \\
+ \left[f\left(v_{*}-x\right) f(v+x)-f\left(v_{*}\right) f(v)\right] d x d v_{*}
+\end{multline}
+Let $y = v_* - v - x$, then, 
+
+\begin{multline*}
+Q(f, f)(v) =4 \int_{y \in \mathbb{R}^{d}} \int_{x \in \mathbb{R}^{d}} B\left(r,\cos\chi\right) \frac{1}{r} \delta\left(4 x \cdot g+4|x|^{2}\right) \\
+ \left[f\left(v+y\right) f(v+x)-f\left(v+x+y\right) f(v)\right] d x d v_{*}
+\end{multline*}
+
+\begin{multline*}
+Q(f, f)(v) =4 \int_{y \in \mathbb{R}^{d}} \int_{x \in \mathbb{R}^{d}} B\left(r,\cos\chi\right) \frac{1}{r} \delta\left(x \cdot y\right) \\
+ \left[f\left(v+y\right) f(v+x)-f\left(v+x+y\right) f(v)\right] d x d y
+\end{multline*}
+
+\begin{multline*}
+Q(f, f)(v)=4 \int_{y \in \mathbb{R} 3} \int_{x \in \mathbb{R} 3} B\left(|x+y|,-\frac{x \cdot(x+y)}{|x||x+y|}\right) \frac{1}{|x+y|}\delta\left(x \cdot y\right) \\
+ \left[f\left(v+y\right) f(v+x)-f\left(v+x+y\right) f(v)\right] d x d y
+\end{multline*}
+
+\begin{equation*}
+\tilde{B}(x, y) \triangleq 4 B\left(|x+y|,-\frac{x \cdot(x+y)}{|x||x+y|}\right)|x+y|^{-1}
+\end{equation*}
+
+$x\cdot y$ = 0, 
+\begin{equation*}
+\tilde{B}(x, y)=\tilde{B}(|x|,|y|) \triangleq 4 B\left(\sqrt{|x|^{2}+|y|^{2}}, \frac{|x|}{\sqrt{|x|^{2}+|y|^{2}}}\right)\left(|x|^{2}+|y|^{2}\right)^{-\frac{1}{2}}\end{equation*}
+
+
+\color{blue}
+\begin{align*}\begin{split}
+\hat Q[k] &=  \sum_{q=-N/2}^{N/2-1} Q[q]e^{-i{\pi \over L}k\cdot v_q}=   \frac{1}{N^3} \sum_{\substack{l,m= -N/2 \\ l+m = k}}^{N/2-1}\mathcal{G}(l,m)\hat f[l] \hat f[m]  \\
+&= \frac{1}{N^3} \sum_{\substack{l,m= -N/2 \\ l+m = k}}^{N/2-1} [G(l,m) - G(m,m)]\hat f[l] \hat f[m]
+\end{split}\end{align*}
+\color{black}
+
+We can rewrite $G(l,m)$ from \cite{gambaFastSpectralMethod2017} also in $dxdy$, $g = -(x+y)$, 
+\begin{align*}
+\begin{split}
+G(l,m)  &= \int_{\mathbb{R}^3} \int_{\mathcal{S}^2}   B(r,\omega \cdot \hat g)  e^{-i{\pi \over L} \frac{l+m}{2} \cdot g -i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
+&= \int_{\mathbb{R}^3} \int_{\mathcal{S}^2}   B(r,\omega \cdot \hat g)  e^{-i\frac{\pi}{L}\left[\frac{m-l}{2}\cdot (|g|\omega - g) + m\cdot g\right]} d\omega dg \\
+&= 2\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} {1\over r} B(r,\omega \cdot \hat g)  \delta(2x\cdot g + |x|^2) e^{-i\frac{\pi}{L}\left[\frac{m-l}{2}\cdot x + m\cdot g\right]} dx dg \\
+&= 2\int_{\mathbb{R}^3}\int_{\mathbb{R}^3}{1\over r} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[\frac{m-l}{2}\cdot x + m\cdot g\right]} dx dg \\
+\end{split}
+\end{align*}
+Change of variable $x \to x/2$ in $x$,
+
+\begin{align*}
+\begin{split}
+G(l,m) &= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[(m-l)\cdot x + m\cdot g\right]} dx dg \\
+&= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{i\frac{\pi}{L}(l\cdot x + m\cdot y)} dx dy 
+\end{split}
+\end{align*}
+This is exactly the $\beta(l,m)$ given in Ref.~\cite{mouhotFastAlgorithmsComputing2006}, once using the symbol of $\tilde B(x,y)$,
+\begin{align}
+\begin{split}
+G(l,m) &= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[(m-l)\cdot x + m\cdot g\right]} dx dg \\
+&= \int_{\mathbb{R}^3}\int_{\mathbb{R}^3} \tilde B(x,y)  \delta(x\cdot y) e^{i\frac{\pi}{L}(l\cdot x + m\cdot y)} dx dy 
+\end{split}
+\label{eq:Glmxy}
+\end{align}
+When $\tilde B(x,y)$ can be decoupled as
+\begin{equation*}
+\tilde B(x,y) = a(|x|)b(|y|)
+\end{equation*} 
+then we can have the following decomposition
+\begin{equation*}
+\mathcal{G}(l,m)  \simeq  \sum_{p=1}\alpha_p(l)\alpha_p'(m).
+\end{equation*}
+Thus the convolution computation is of $\hat Q_k$ is possible.
+
+Write Eq.~\eqref{eq:Glmxy} in sphere coordinate,
+\begin{multline}
+G(l, m)=\frac{1}{4} \int_{e \in \mathbb{S}^{2}} \int_{e^{\prime} \in \mathbb{S}^{2}} \delta\left(e \cdot e^{\prime}\right) 
+\left[\int_{-R}^{R}|\rho| a(\rho) e^{i \frac{\pi}{L} \rho(l \cdot e)} d \rho\right]\left[\int_{-R}^{R}\left|\rho^{\prime}\right| b\left(\rho^{\prime}\right) e^{i \frac{\pi}{L}\rho^{\prime}\left(m \cdot e^{\prime}\right)} d \rho^{\prime}\right] d e d e^{\prime}
+\end{multline}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}[rotate=20]
+  \tkzInit[xmax=5,ymax=5,xmin=-5,ymin=-5]
+  %\tkzGrid
+  %\tkzAxeXY
+  % \draw[ thick,-latex] (-6,0) -- (6,0) node [anchor= west]{$x$};
+   %\draw[ thick,-latex] (0,-6) -- (0,6) node [anchor= west]{$x$};
+   \draw[] (0,0) circle (3);
+   
+   \draw[thick,-latex] (-2.5,1.7) node[left] {$v$}-- (2.5,-1.7) node[right] {$v_*$};
+   \draw[thick,-latex,dashed] (-2.5,-1.7) -- (2.5,1.7);
+   \draw[thick,-latex] (-2.5,1.7) -- (-2.5,-1.7) node[below] {$v'$};
+   \draw[thick,-latex] (-2.5,1.7) -- (2.5,1.7) node[right] {$v_*'$};
+   \draw[thick,-latex, blue] (-3.5,1.7) -- (-3.5,-1.7) node[below] {$x$};
+   \draw[thick,-latex, blue] (-2.5,4.0) -- (2.5,4.0) node[right] {$y$};
+   \draw[thick,-latex, blue] (0,0) -- (-1,-0.7) node [below] {$\omega$} ;
+
+
+   % \draw[ thick, blue,-latex] (0,0) -- (1.54, 0.92) node [anchor=north]{$-\bm x/2$};    
+ % \tkzText[above](0,6.75){2D demo of the basic identity}
+  \end{tikzpicture}
+\caption{Geometry of the collision $\left(v, v_{*}\right) \leftrightarrow\left(v^{\prime}, v_{*}^{\prime}\right)$, $v* = v+x+y$, $v' = v+x$, $v'_* = v+y$.}
+\label{fig:collision_geo}
+\end{center}
+\end{figure}
+
+
+
+\begin{equation}
+\begin{array}{c}{\int Q^{\operatorname{tr}}(f, f) \varphi(v) d v=\frac{1}{4} \iiint_{\left\{v, x, y \in \mathbb{R}^{d} | v, v+x, v+y, v+x+y \in \mathcal{D}_{T}\right\}} \tilde{B}(x, y) \delta(x \cdot y)} \\ {f(v+x+y) f(v)[\varphi(v+y)+\varphi(v+x)-\varphi(v+x+y)-\varphi(v)] d v d x d y}\end{array}
+\end{equation}
 
 
 \bibliographystyle{amsplain} 
