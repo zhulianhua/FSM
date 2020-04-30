@@ -8,9 +8,11 @@
 \usepackage{listings}
 \usepackage{amssymb}
 \usepackage{epstopdf}
-\usepackage{tikz}
+%\usepackage{tikz}
 \usepackage{bm}
 \usepackage{tkz-euclide}
+\usetkzobj{all}
+\newcommand{\Sinc}{\operatorname{Sinc}}
 
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
@@ -69,7 +71,7 @@ Change to use deflection angle $\chi$ instead of impacting parameter ($b$):
 \begin{equation}
 bdbd\epsilon =  \sigma d\omega  = \frac{b}{\sin\chi}\left|\frac{db}{d\chi}\right|d\chi d\epsilon 
 		   = \frac{b}{\sin \chi} \left|\frac{db}{d\chi}\right|d\omega 
-		   \triangleq  \frac{1}{r} \mathfrak{B}(r,\cos\chi) d\omega
+		   \triangleq  \frac{1}{r} {B}(r,\cos\chi) d\omega
 \end{equation}
 Note, the deflection angle is the angle between the pre- and post-collision relative velocity, i.e.,
 \begin{equation}
@@ -80,7 +82,7 @@ Then we have the following equivalent forms of the collision term:
 \begin{align}
 \begin{split}
 Q(f,f)(v) 
-&=  \int_{\mathbb{R}^3} \int_0^{+\infty} \int_0^{2\pi} [f(v_*')f(v')-f(v_*)f(v')] r bdbd\epsilon dv_* \\
+&=  \int_{\mathbb{R}^3} \int_0^{+\infty} \int_0^{2\pi} [f(v_*')f(v')-f(v_*)f(v)] r bdbd\epsilon dv_* \\
 &=  \int_{\mathbb{R}^3} \int_0^{\pi} \int_0^{2\pi} [f(v_*')f(v')-f(v_*)f(v)] r \frac{b}{\sin \chi} \left|\frac{db}{d\chi} \right| d\chi d\epsilon dv_* \\
 &=  \int_{\mathbb{R}^3} \int_0^{\pi} \int_0^{2\pi} {B}(r,\cos\chi)[f(v_*')f(v')-f(v_*)f(v)] d\chi d\epsilon dv_* \\
 &=  \int_{\mathbb{R}^3} \int_{\mathcal{S}^2} {B}(r,\cos\chi)[f(v_*')f(v')-f(v_*)f(v)] d\omega dv_* \\
@@ -90,7 +92,7 @@ Q(f,f)(v)
 & = Q^{+}(f,f) - fL(f)
 \end{split}
 \end{align}
-in which here $\sigma(r,\cos\chi)$ is called the differential cross-section (DCS). $L(f)$ is
+in which here $\sigma(r,\cos\chi) = (b/\sin \chi) |\text{d} b/\text{d} \chi|$ is called the differential cross-section (DCS). $L(f)$ is
 \begin{equation}
 L(f) \triangleq \int_{\mathbb{R}^3} \int_{\mathcal{S}^2} {B}(r,\cos\chi)f(v-g)d\omega dg
 \end{equation}
@@ -108,12 +110,33 @@ Therefore
 \begin{equation}
 \left| {db\over d\chi} \right| = {1\over 2}d_{HS}\sin(\chi/2)
 \end{equation}
-and
+and note that $b = d_{HS} \cos(\chi/2)$, we have
 \begin{equation}
 \sigma = \frac{d_{HS}^2}{4}
 \end{equation}
 
-For VHS model, the DCS is only a function of $r$ and does not depends on $\cos \chi$:
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}
+ % \tkzInit[xmax=4,ymax=4,xmin=-4,ymin=-4]
+ %  \tkzGrid
+ %  \tkzAxeXY
+  % \draw[ thick,-latex] (-6,0) -- (6,0) node [anchor= west]{$x$};
+   %\draw[ thick,-latex] (0,-6) -- (0,6) node [anchor= west]{$x$};
+   \draw[] (0,0) circle (1);
+   \draw[] (-1.732,1) circle (1);
+   \draw[ thick,dashed,latex-latex] (0,0) -- (-1.732,1);
+   \draw[blue, -latex] (-1.732,1) -- (-0.8, 1) node [right] {$g$};
+
+ % \tkzText[above](0,6.75){2D demo of the basic identity}
+  \end{tikzpicture}
+\caption{For any point $x$ on the blue circle, the projection point of $u$ on $-x$ should be $-x/2$.}
+\label{fig:identity}
+\end{center}
+\end{figure}
+
+
+For VHS model, the $B$ is only a function of $r$ and does not depends on $\cos \chi$:
 \begin{equation}
  {B}(r,\cos\chi) =  b_\gamma r^\gamma
 \end{equation}
@@ -520,11 +543,14 @@ B = b_\gamma r^{\gamma}
 \begin{split}
 G(l,m)  &= b_\gamma  \int_{\mathbb{R}^3} \int_{\mathcal{S}^2}  r^{\gamma}e^{-i{\pi \over L}\frac{l+m}{2} \cdot g -i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
 &= b_\gamma  \int_{\mathbb{R}^3}  r^{\gamma} e^{-i{\pi \over L}\frac{l+m}{2} \cdot g } \int_{\mathcal{S}^2} e^{-i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
-&= b_\gamma  \int_{0}^R\int_{\mathcal{S}^2}  r^{\gamma} e^{-i{\pi \over L}r\frac{l+m}{2} \cdot \hat g }\int_{\mathcal{S}^2}    e^{-i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega d\hat g dr \\
+&= b_\gamma  \int_{0}^R\int_{\mathcal{S}^2}  r^{\gamma + 2} e^{-i{\pi \over L}r\frac{l+m}{2} \cdot \hat g }\int_{\mathcal{S}^2}    e^{-i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega d\hat g dr \\
 & = 16 \pi^{2} b_{\gamma} \int_{0}^{R} r^{\gamma+2} \operatorname{Sinc}\left(\frac{\pi}{L} r \frac{|l+m|}{2}\right) \operatorname{Sinc}\left(\frac{\pi}{L} r \frac{|l-m|}{2}\right) d r
 \end{split}
 \end{align*}
-Note the Sinc function is defined as $\operatorname{Sinc}(x) := \sin(x)/x$, while in Matlab the \verb|sinc| function is   \verb|sinc := sin(x*pi)/(pi*x)|.
+Note the Sinc function is defined as $\operatorname{Sinc}(x) := \sin(x)/x$, while in Matlab the \verb|sinc| function is   \verb|sinc := sin(x*pi)/(pi*x)|. Note in the last transformation we have used the following identity,
+\begin{equation*}
+\int_{\mathcal{S}^2} e^{-i p \cdot \hat g} d \hat g = 4\pi \operatorname{Sinc}\left(\left\vert p \right\vert\right).
+\end{equation*}
 
 \begin{align*}
 \begin{split}
@@ -663,7 +689,7 @@ We need to get the following values for $k = -N/2, N/2-1$ for every $r_i$ and $w
 \section{Carleman representation}
 
 The basic identity we will use is 
-\begin{equation}
+\begin{equation}\label{identity} 
 \frac{1}{2} \int_{\mathbb{S}^{d-1}} F(|u| \sigma-u) d \sigma=\frac{1}{|u|^{d-2}} \int_{\mathbb{R}^{d}} \delta\left(2 x \cdot u+|x|^{2}\right) F(x) d x
 \end{equation}
 For $d=2$, the \emph{graphical proof} of the identity is give in Fig.~\ref{fig:identity}. The coordinate of a point on the black circle's equation with parameter $u$ is $|u| \sigma-u$.  For a given $u$, the equation of the point on the blue circle is $ u\cdot x/|x| = |x|/2$, i.e., $2 x \cdot u+|x|^{2}= 0$. 
@@ -729,15 +755,44 @@ Q(f, f)(v) =4 \int_{y \in \mathbb{R}^{d}} \int_{x \in \mathbb{R}^{d}} B\left(r,\
 Q(f, f)(v)=4 \int_{y \in \mathbb{R} 3} \int_{x \in \mathbb{R} 3} B\left(|x+y|,-\frac{x \cdot(x+y)}{|x||x+y|}\right) \frac{1}{|x+y|}\delta\left(x \cdot y\right) \\
  \left[f\left(v+y\right) f(v+x)-f\left(v+x+y\right) f(v)\right] d x d y
 \end{multline*}
+\begin{figure}[tbp]
+\begin{center}
+\begin{tikzpicture}[rotate=34.5]
+  \tkzInit[xmax=5,ymax=5,xmin=-5,ymin=-5]
+  \tkzGrid
+  \tkzAxeXY
+  % \draw[ thick,-latex] (-6,0) -- (6,0) node [anchor= west]{$x$};
+   %\draw[ thick,-latex] (0,-6) -- (0,6) node [anchor= west]{$x$};
+   \draw[] (0,0) circle (3);
+   
+   \draw[thick,-latex] (-2.5,1.7) node[left] {$v_*$}-- (2.5,-1.7) node[right] {$v$};
+   \draw[thick,-latex,dashed] (-2.5,-1.7) -- (2.5,1.7);
+   \draw[thick,-latex] (-2.5,1.7) -- (-2.5,-1.7) node[below] {$v_*'$};
+   \draw[thick,-latex] (-2.5,1.7) -- (2.5,1.7) node[right] {$v'$};
+   \draw[thick,latex-, blue] (-3.5,1.7) -- (-3.5,-1.7) node[below] {$x$};
+   \draw[thick,latex-, blue] (-2.5,3.5) -- (2.5,3.5) node[right] {$y$};
+   \draw[ultra thick,-latex, green] (0,0) -- (0.78,0.531) node [left] {$\omega$} ;
+   \draw[red] (0.5,-0.35) arc (-30:30:0.7) node[right] {$\chi$};
+   %\tkzDrawArc[0.8 with nodes] ((1,0), 0.5) ((1,-0.7), (1,0.7));
+   %\tkzDefPoint (1,0){A}
+    %\tkzTangent[from with R=A](O,1cm) \tkzGetPoints{T1}{T2}
 
-\begin{equation*}
+
+   % \draw[ thick, blue,-latex] (0,0) -- (1.54, 0.92) node [anchor=north]{$-\bm x/2$};    
+ % \tkzText[above](0,6.75){2D demo of the basic identity}
+  \end{tikzpicture}
+\caption{Geometry of the collision $\left(v, v_{*}\right) \leftrightarrow\left(v^{\prime}, v_{*}^{\prime}\right)$, $v* = v+x+y$, $v' = v+x$, $v'_* = v+y$. It also indicates $\sin (\chi/2) = |x|/\sqrt{(|x^2|+|y^2|)}$ and $\cos (\chi/2) = |y|/\sqrt{(|x^2|+|y^2|)}$}
+\label{fig:collision_geo}
+\end{center}
+\end{figure}
+Define
+\begin{equation}\label{tildeB}
 \tilde{B}(x, y) \triangleq 4 B\left(|x+y|,-\frac{x \cdot(x+y)}{|x||x+y|}\right)|x+y|^{-1}
-\end{equation*}
-
-$x\cdot y$ = 0, 
+\end{equation}
+and as $x\cdot y$ = 0, 
 \begin{equation*}
-\tilde{B}(x, y)=\tilde{B}(|x|,|y|) \triangleq 4 B\left(\sqrt{|x|^{2}+|y|^{2}}, \frac{|x|}{\sqrt{|x|^{2}+|y|^{2}}}\right)\left(|x|^{2}+|y|^{2}\right)^{-\frac{1}{2}}\end{equation*}
-
+\tilde{B}(x, y)=\tilde{B}(|x|,|y|) \triangleq 4 B\left(\sqrt{|x|^{2}+|y|^{2}}, \frac{|x|}{\sqrt{|x|^{2}+|y|^{2}}}\right)\left(|x|^{2}+|y|^{2}\right)^{-\frac{1}{2}}
+\end{equation*}
 
 \color{blue}
 \begin{align*}\begin{split}
@@ -746,7 +801,7 @@ $x\cdot y$ = 0,
 \end{split}\end{align*}
 \color{black}
 
-We can rewrite $G(l,m)$ from \cite{gambaFastSpectralMethod2017} also in $dxdy$, $g = -(x+y)$, 
+We can reformulate the integral of $G(l,m)$ of Ref.~ \cite{gambaFastSpectralMethod2017} from the spherical surface integral to 3D Cartesian integral by using the basic identity in Eq.~\eqref{identity};
 \begin{align*}
 \begin{split}
 G(l,m)  &= \int_{\mathbb{R}^3} \int_{\mathcal{S}^2}   B(r,\omega \cdot \hat g)  e^{-i{\pi \over L} \frac{l+m}{2} \cdot g -i {\pi \over L} r \frac{m-l}{2}\cdot \omega}d\omega dg \\
@@ -755,22 +810,22 @@ G(l,m)  &= \int_{\mathbb{R}^3} \int_{\mathcal{S}^2}   B(r,\omega \cdot \hat g)  
 &= 2\int_{\mathbb{R}^3}\int_{\mathbb{R}^3}{1\over r} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[\frac{m-l}{2}\cdot x + m\cdot g\right]} dx dg \\
 \end{split}
 \end{align*}
-Change of variable $x \to x/2$ in $x$,
+By change of variable $x \to x/2$ in $x$, and noticing $g = -(x+y)$, it can be further changed the integral of $dxdy$: 
 
 \begin{align*}
 \begin{split}
-G(l,m) &= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[(m-l)\cdot x + m\cdot g\right]} dx dg \\
-&= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{i\frac{\pi}{L}(l\cdot x + m\cdot y)} dx dy 
+G(l,m) &= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3}{1\over r}  B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[(m-l)\cdot x + m\cdot g\right]} dx dg \\
+&= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3}{1\over r}  B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{i\frac{\pi}{L}(l\cdot x + m\cdot y)} dx dy,
 \end{split}
 \end{align*}
-This is exactly the $\beta(l,m)$ given in Ref.~\cite{mouhotFastAlgorithmsComputing2006}, once using the symbol of $\tilde B(x,y)$,
-\begin{align}
+which is exactly the $\beta(l,m)$ given in Ref.~\cite{mouhotFastAlgorithmsComputing2006}, once using the symbol of $\tilde B(x,y)$ in Eq.~\eqref{tildeB},
+\begin{align*}
 \begin{split}
-G(l,m) &= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[(m-l)\cdot x + m\cdot g\right]} dx dg \\
+G(l,m) &= 4\int_{\mathbb{R}^3}\int_{\mathbb{R}^3} {1\over r}  B(r,\omega \cdot \hat g)  \delta(x\cdot y) e^{-i\frac{\pi}{L}\left[(m-l)\cdot x + m\cdot g\right]} dx dg \\
 &= \int_{\mathbb{R}^3}\int_{\mathbb{R}^3} \tilde B(x,y)  \delta(x\cdot y) e^{i\frac{\pi}{L}(l\cdot x + m\cdot y)} dx dy 
 \end{split}
 \label{eq:Glmxy}
-\end{align}
+\end{align*}
 When $\tilde B(x,y)$ can be decoupled as
 \begin{equation*}
 \tilde B(x,y) = a(|x|)b(|y|)
@@ -779,50 +834,160 @@ then we can have the following decomposition
 \begin{equation*}
 \mathcal{G}(l,m)  \simeq  \sum_{p=1}\alpha_p(l)\alpha_p'(m).
 \end{equation*}
-Thus the convolution computation is of $\hat Q_k$ is possible.
+Note, for 2D Maxwell model and 3D HS model, $\tilde B$ is a constant, and such decoupling is straightforward. Thus the convolution computation is of $\hat Q_k$ is possible.
 
-Write Eq.~\eqref{eq:Glmxy} in sphere coordinate,
+For the 3D case, write Eq.~\eqref{eq:Glmxy} in spherical-coordinate system, $dxdy$ becomes  $\rho^2 \rho^2 d\rho d\rho de de'$. The $\rho^2$ together with $\rho^{-1}$ in $\title{B}$
+ leads to $|\rho|$,
 \begin{multline}
 G(l, m)=\frac{1}{4} \int_{e \in \mathbb{S}^{2}} \int_{e^{\prime} \in \mathbb{S}^{2}} \delta\left(e \cdot e^{\prime}\right) 
-\left[\int_{-R}^{R}|\rho| a(\rho) e^{i \frac{\pi}{L} \rho(l \cdot e)} d \rho\right]\left[\int_{-R}^{R}\left|\rho^{\prime}\right| b\left(\rho^{\prime}\right) e^{i \frac{\pi}{L}\rho^{\prime}\left(m \cdot e^{\prime}\right)} d \rho^{\prime}\right] d e d e^{\prime}
+\left[\int_{-R}^{R}|\rho| a(\rho) e^{i \frac{\pi}{L} \rho(l \cdot e)} d \rho\right]\left[\int_{-R}^{R}\left|\rho^{\prime}\right| b\left(\rho^{\prime}\right) e^{i \frac{\pi}{L}\rho^{\prime}\left(m \cdot e^{\prime}\right)} d \rho^{\prime}\right] d e ^{\prime}d e
 \end{multline}
-
-
-\begin{figure}[htbp]
-\begin{center}
-\begin{tikzpicture}[rotate=20]
-  \tkzInit[xmax=5,ymax=5,xmin=-5,ymin=-5]
-  %\tkzGrid
-  %\tkzAxeXY
-  % \draw[ thick,-latex] (-6,0) -- (6,0) node [anchor= west]{$x$};
-   %\draw[ thick,-latex] (0,-6) -- (0,6) node [anchor= west]{$x$};
-   \draw[] (0,0) circle (3);
-   
-   \draw[thick,-latex] (-2.5,1.7) node[left] {$v$}-- (2.5,-1.7) node[right] {$v_*$};
-   \draw[thick,-latex,dashed] (-2.5,-1.7) -- (2.5,1.7);
-   \draw[thick,-latex] (-2.5,1.7) -- (-2.5,-1.7) node[below] {$v'$};
-   \draw[thick,-latex] (-2.5,1.7) -- (2.5,1.7) node[right] {$v_*'$};
-   \draw[thick,-latex, blue] (-3.5,1.7) -- (-3.5,-1.7) node[below] {$x$};
-   \draw[thick,-latex, blue] (-2.5,4.0) -- (2.5,4.0) node[right] {$y$};
-   \draw[thick,-latex, blue] (0,0) -- (-1,-0.7) node [below] {$\omega$} ;
-
-
-   % \draw[ thick, blue,-latex] (0,0) -- (1.54, 0.92) node [anchor=north]{$-\bm x/2$};    
- % \tkzText[above](0,6.75){2D demo of the basic identity}
-  \end{tikzpicture}
-\caption{Geometry of the collision $\left(v, v_{*}\right) \leftrightarrow\left(v^{\prime}, v_{*}^{\prime}\right)$, $v* = v+x+y$, $v' = v+x$, $v'_* = v+y$.}
-\label{fig:collision_geo}
-\end{center}
-\end{figure}
-
-
-
-\begin{equation}
-\begin{array}{c}{\int Q^{\operatorname{tr}}(f, f) \varphi(v) d v=\frac{1}{4} \iiint_{\left\{v, x, y \in \mathbb{R}^{d} | v, v+x, v+y, v+x+y \in \mathcal{D}_{T}\right\}} \tilde{B}(x, y) \delta(x \cdot y)} \\ {f(v+x+y) f(v)[\varphi(v+y)+\varphi(v+x)-\varphi(v+x+y)-\varphi(v)] d v d x d y}\end{array}
+Define
+\begin{equation*}
+\phi_{R,a}(s) = \int_{-R}^{R}|\rho| a(\rho) e^{i \rho s} d \rho
+\quad
+\phi_{R,b}(s) = \int_{-R}^{R}|\rho| b(\rho) e^{i \rho s} d \rho,
+\end{equation*}
+And they can be further simplied as
+ \begin{equation}
+\phi_{R,a}(s) = 2\int_0^R\rho a(\rho) \cos(\rho s)d \rho,
+\quad
+\phi_{R,b}(s) = 2\int_0^R\rho b(\rho) \cos(\rho s)d \rho.
 \end{equation}
 
+both of which are odd functions.
+Then we have
+\begin{multline*}
+\begin{split}
+G(l, m) &=\frac{1}{4}
+ \int_{e \in \mathbb{S}^{2}} \phi_{R,a}\left(\frac{\pi}{L}l\cdot e\right) \int_{e^{\prime} \in \mathbb{S}^{2}} \delta\left(e \cdot e^{\prime}\right)  \left[\int_{-R}^{R}\left|\rho^{\prime}\right| b\left(\rho^{\prime}\right) e^{i \frac{\pi}{L}\rho^{\prime}\left(m \cdot e^{\prime}\right)} d \rho^{\prime}\right] d e ^{\prime}d e \\
+ & = \frac{1}{4} \int_{e \in \mathbb{S}^{2}} \phi_{R,a}\left(\frac{\pi}{L}l\cdot e\right) 
+ \left[ \int_{e^{\prime} \in \mathbb{S}^{2} \bigcap e^{\perp}}  \phi_{R,b}\left(\frac{\pi}{L}m\cdot e'\right)d e^{\prime}\right]d e
+\end{split}
+\end{multline*}
+The integral of $e'$ in the intersection circle of the unit sphere with the perpendicular plane of  $e$ can be transformed to an integral of over the polar angle in a local polar coordinate system with basis of $(e, u=\Pi_{e^\perp}(m), e\times u)$, where $=\Pi_{e^\perp}(m)$ is the projection vector of $m$ in the perpendicular plane of $e$. The equivalence is
+\begin{equation*}
+ \int_{e^{\prime} \in \mathbb{S}^{2} \bigcap e^{\perp}}  \phi_{R,b}\left(\frac{\pi}{L}m\cdot e'\right)d e^{\prime}
+ = 2 \int_0^{\pi} \phi_{R,b}\left(\frac{\pi}{L} |\Pi_{e^{\perp}}(m)| \cos \theta' \right) d \theta' 
+ \end{equation*}
+ in which the odd function property of $\phi_{R,b}$ is used. 
+\begin{figure}[tbp]
+\begin{center}
+\begin{tikzpicture}[rotate=0]
+   \draw[] (0,0) ellipse (3 and 2);
+   \draw[thick,-latex] (0,0) -- (0,3) node[right]{$e$};
+   \draw[thick,-latex, blue] (0,0) -- (1.03,2) node[right]{$m$};
+   \draw[thick,dashed,-latex, blue] (0,0) -- (1.0,-1) node[right]{$\Pi_{e^{\perp}}m$};
+   \draw[thick,-latex, red] (0,0) -- (3,0) node[right]{$e'$};
+   \draw[red] (0.5,0) arc (0:-47:0.5) node[right] {$\theta'$};
+\end{tikzpicture}
+\caption{Geometry}
+\label{fig:local_polar_coordinate}
+\end{center}
+\end{figure}
+Define
+\begin{equation*}
+\psi_{R,b}\left(\Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right ) \triangleq \int_0^{\pi}  \phi_{R,b}\left( \left\vert\Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right \vert \cos \theta' \right) d \theta' 
+\end{equation*}
+Thus we have
+\begin{multline*}
+\begin{split}
+G(l, m)
+ & = \int_{e \in \mathbb{S}^{2}_+} \phi_{R,a}\left(\frac{\pi}{L}l\cdot e\right) 
+ \psi_{R,b}\left(\Pi_{e^{\perp}}(\frac{\pi}{L}m)\right)  de
+\end{split}
+\end{multline*}
+The surface integral is approximated numerically by taking a spherical parameterizations of $(\theta', \varphi)$ of $e \in \mathbb{S}^{2}_+$ and uniform grids of size $M_1$ and $M_2$,
+\begin{equation*}
+G(l, m)
+  = \frac{\pi^2}{M_1M_2}\sum_{p,q=0}^{M1,M2} \phi_{R,a}\left(\frac{\pi}{L}l\cdot e_{(\theta'_p,\varphi_q)}\right) 
+ \psi_{R,b}\left(\Pi_{e^{\perp}_{(\theta'_p,\varphi_q)}}\left(\frac{\pi}{L}m \right) \right)
+ \end{equation*}
+ and
+ \begin{equation*}
+ \left(\theta'_{p}, \varphi_{q}\right)=\left(\frac{p \pi}{M_{1}}, \frac{q \pi}{M_{2}}\right)
+ \end{equation*}
+ Define
+ \begin{equation*}
+ \alpha_{p, q}(l)=\phi_{R, a}\left(\frac{\pi}{L}l \cdot e_{\left(\theta'_{p}, \varphi_{q}\right)}\right), \quad \alpha_{p, q}^{\prime}(m)=\psi_{R, b}\left(\Pi_{e_{(\theta'_p, \varphi_{q})} }\left(\frac{\pi}{L}m \right)\right)
+ \end{equation*}
+We have
+\begin{equation*}
+G(l, m)
+  = \frac{\pi^2}{M_1M_2}\sum_{p,q=1}^{M1,M2}\alpha_{p,q}(l) \alpha'_{p,q}(m).
+ \end{equation*}
+When $|a(\rho)|  = |b(\rho)|= 1$,
+\begin{equation*}
+\phi_{R,1}(s) = R^2[2\Sinc(Rs) - \Sinc^2(Rs/2)]
+\end{equation*}
+Thus, in the implementation, $\phi_{R,a}$ can be computed `on-the-fly', while $\phi_{R,a}\left(\frac{\pi}{L}l\cdot e\right)$ can be pre-computed for all discrete $m$ and $e$ and stored for reused. 
+Note, we can further simplify $\psi_{R,b}$ into a single integration in $d\rho$ as
+\begin{multline*}
+\begin{split}
+\psi_{R,b}\left(\Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right ) &\triangleq \int_0^{\pi}  \phi_{R,b}\left( \left\vert\Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right \vert \cos \theta' \right) d \theta'  \\ 
+&  = 2\pi \int_0^R \rho  b(\rho ) J_0\left(\rho\left \vert \Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right \vert \right) d\rho
+\end{split}
+\end{multline*}
+in which  we have used the zero-order Bessel function. The integral representation of Bessel function is 
+\begin{equation*}
+J_{\alpha}(x)=\frac{1}{ \pi} \int_{0}^{\pi} \cos (\alpha \tau-x \sin \tau) d \tau.
+\end{equation*}
+In particular, the zero-order Bessel function is
+\begin{equation}
+J_{0}(x)=\frac{1}{\pi} \int_{0}^{\pi} \cos(x \sin \tau) d \tau = \frac{1}{\pi} \int_{0}^{\pi} \cos(x \cos \tau) d \tau
+\end{equation}
 
-\bibliographystyle{amsplain} 
+\section{Wu's JCP2013 Paper}
+
+\subsubsection{Special case of Maxwell molecules, $\alpha,\gamma=0$}
+
+The generalized collision kernel in Wu's paper is
+\begin{equation}
+B(r,\cos \chi) = C^{''}_{\gamma,\alpha}\sin^{\gamma+\alpha-1}\left ( {\chi \over 2}\right)\cos^{-\alpha}\left ( {\chi \over 2}\right)r^{\gamma}
+\end{equation}
+in which we have used the reversed notation as in Wu's paper, i.e., $\gamma$ changed to $\alpha$, and $\alpha$ changed to $\gamma$. For the special case of $\alpha,\gamma=0$, we have the constant collision kernel for Maxwell molecules:
+\begin{equation}
+B_\text{Maxwell} =   C^{''}_{\gamma,\alpha} \sin^{-1}\left ( {\chi \over 2}\right)
+\end{equation}
+
+Use Mouhot's notations,
+\begin{equation*}
+a(\rho) = |\rho|^{-1},\quad b(\rho) = 1
+\end{equation*}
+
+\begin{align*}
+\begin{split}
+\phi_{R, a}(s) &=\phi_{R, 0}(s)  =  2 \int_{0}^{R} \cos (\rho s) d \rho = 2\Sinc(Rs)\\
+\phi_{R, b}(s) &=\phi_{R, 1}(s) =  2 \int_{0}^{R} \rho \cos (\rho s) d \rho = R^2[2\Sinc(Rs) - \Sinc^2(Rs/2)]
+\end{split}
+\end{align*}
+
+\begin{multline*}
+\begin{split}
+\psi_{R,b}\left(\Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right ) &=\psi_{R,1}\left(\Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right )   \\
+& = \int_0^{\pi}  \phi_{R,1}\left( \left\vert\Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right \vert \cos \theta' \right) d \theta'  \\ 
+&  = 2\pi \int_0^R \rho J_0\left(\rho\left \vert \Pi_{e^{\perp}}\left(\frac{\pi}{L}m \right) \right \vert \right) d\rho
+\end{split}
+\end{multline*}
+
+\begin{equation}
+\int_0^R \rho J_0(s\rho) = {1\over s^2}\int_0^{sR}t J_0(t) dt
+\end{equation}
+
+In Wolfram documentation
+\begin{equation}
+\int z J_0(z) dz = {z^2\over 2} F_2\left( 1; 1,2;-z^2/4\right)
+\end{equation}
+where $F_2(\{a_1,\dots,a_p\}, \{a_1,\dots,a_p\}, z)$ is the \verb|HypergeometricPFQ| function
+
+Some integral
+\begin{equation*}
+{1\over 2}\int_0^\pi \sin^{-1}(\theta/2)\sin^3(\theta)d\theta = \frac{16}{15}
+\end{equation*}
+
+
+
+\bibliographystyle{amsplain}
 
 %\bibliographystyle{te}
 \bibliography{FSM}

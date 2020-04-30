@@ -1,11 +1,8 @@
 % The Fast spectral algorithm from gambaFastSpectralMethod2017
 %   
-% Reproduce the results of BKW solution for
-% for Maxwell-type interactions (gamma = 0)
-% NOTE: Only for Maxwell molecules, we can derive an exact 
-% solution BKW for the spatial homogeneous Boltzmann equation
+% For HS model
 
-% Date: Apr 1, 2019
+% Date: Apr 22, 2019
 % Author: Lianhua Zhu
 % Depends on lgwt.m and getLebedevSphere.m
 
@@ -13,11 +10,13 @@ clc;clf;
 tic
 %% Computational paramters
 % Velocity grid size and number of node for the Guass-Lebelev quadrature
-N =32; M = 6;
+N =32; M = 14;
 % Radial extend for radial integration and velocity domain
 R = 6.0; L = (3+sqrt(2.0))*R/4; dv = 2*L/N;
 % VHS constant in eq. 1.5, and Page 667
-bgamma = 1/4/pi; gamma = 0.0; % 0.0 coressponds to Maxwell molecular model
+dHS = 1;
+bgamma = 0.25*dHS;
+gamma = 1.0; % 1.0 coressponds to HS molecular model
 
 %% Constant aux arrays for vectorization
 li = -N/2:N/2-1;
@@ -144,3 +143,5 @@ legend('Q_{num}(:,N/2,N/2)', 'Q_{ana}(:,N/2,N/2)')
 title('BKW solution of Maxwell molecular, M=6,N=32')
 % should be 3.80e-8 for N=32,M=6, 
 fprintf('max difference = %e\n', max(max(max(abs(Q - Qana)))));
+
+QFSMHS = Q;
